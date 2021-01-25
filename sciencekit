@@ -1,0 +1,252 @@
+#include <SharpIR.h>
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+//pin 12,11,9,5,4,3,2 used left 13,10,8,7,1,0
+
+// Define model and input pin:
+#define IRPin A4
+#define model 1080
+/* Model :
+  GP2Y0A02YK0F --> 20150
+  GP2Y0A21YK0F --> 1080
+  GP2Y0A710K0F --> 100500
+  GP2YA41SK0F --> 430
+*/
+
+//Sensor// to store the distance:
+int distance_cm;
+// Create a new instance of the SharpIR class:
+SharpIR mySensor = SharpIR(IRPin, model);
+
+int switchONOFF = A0;
+int switch1     = A1;
+int switch2     = A2;
+int switch3     = A3;
+const int pwm   = 10;
+const int in_1  = 8;
+const int in_2  = 7;
+
+int motor_rotate = 0;
+
+boolean startButtonstate = false; //switchONOFF initalization
+boolean wlcMsg = false;//track if wlcMsg has already been display
+
+void setup() {
+  //switch
+  pinMode(switchONOFF,INPUT);
+  pinMode(switch1,INPUT);
+  pinMode(switch2,INPUT);
+  pinMode(switch3,INPUT);
+
+  //motor
+  pinMode(pwm,OUTPUT);
+  pinMode(in_1,INPUT);
+  pinMode(in_2, INPUT);
+
+
+  //lcd
+  int Contrast=60;
+  lcd.begin(16, 2);
+  analogWrite(6,Contrast);
+  Serial.begin(9600);
+}
+
+void loop() {
+  startButtonstate = digitalRead(switchONOFF);
+  
+  if(wlcMsg == false)
+  {
+    Serial.println(" ");
+    Serial.println("Press the ONOFF button to begin");
+    wlcMsg == true;
+  }
+  else
+  {
+    wlcMsg = false;
+    startButtonstate = LOW;
+  }
+  
+  if(startButtonstate == HIGH)
+  {
+    if(switch1 == HIGH && motor_rotate == 0)
+    {
+       // Get the start point(distance) for 3sec
+    lcd.setCursor(0,0);
+    distance_cm = mySensor.distance();
+         // Print the measured distance to lcd;
+     lcd.print("Starting distance1: ");
+     lcd.print(distance_cm);
+     Serial.println("Display starting distance1");//SM print
+     delay(2500); // display starting distance for 2.5sec
+
+     lcd.clear();
+     delay(500);
+     Serial.println("Motor is spinning clockwise");//SM print
+
+        //motor spins cw for 3 sec
+     digitalWrite(in_1,HIGH);
+     digitalWrite(in_2,LOW);
+     analogWrite(pwm,255);
+     delay(3000);
+
+    digitalWrite(in_1,LOW); //stop motor
+    digitalWrite(in_2,LOW);
+    motor_rotate = 1;
+
+        //display new distance1
+     lcd.setCursor(0,0);
+     distance_cm = mySensor.distance();
+       // Print the measured distance to lcd;
+     lcd.print("New Distance1: ");
+     lcd.print(distance_cm);
+     Serial.println("Display measured distance1");//SM print
+     delay(8000); //display for 8sec
+     lcd.clear(); 
+    }
+        
+  }
+
+ if(startButtonstate == HIGH) // if statement for switch1 == LOW
+ {
+  if(switch1 == LOW && motor_rotate == 1)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Returning...");
+         //motor spins anti-cw for 3 sec
+     digitalWrite(in_1,LOW);
+     digitalWrite(in_2,HIGH);
+     analogWrite(pwm,255);
+     delay(3000);
+     lcd.clear();
+
+     digitalWrite(in_1,LOW);
+     digitalWrite(in_2,LOW);
+     motor_rotate = 0;
+  }  
+ }
+////////////////////////////////////////
+
+
+if(startButtonstate == HIGH)
+{
+  if(switch2 == HIGH && motor_rotate == 0)
+  {  
+// Get the start point(distance) for 3sec
+    lcd.setCursor(0,0);
+    distance_cm = mySensor.distance();
+// Print the measured distance to lcd;
+     lcd.print("Starting distance2: ");
+     lcd.print(distance_cm);
+     Serial.println("Display starting distance2");//SM print
+     delay(2500); // display starting distance for 2.5sec
+
+     lcd.clear();
+     delay(500);
+     Serial.println("Motor is spinning clockwise");//SM print
+
+//motor spins cw for 3 sec
+     digitalWrite(in_1,HIGH);
+     digitalWrite(in_2,LOW);
+     analogWrite(pwm,255);
+     delay(3000);
+
+//stop motor
+    digitalWrite(in_1,LOW); 
+    digitalWrite(in_2,LOW);
+    motor_rotate = 1;
+
+//display new distance2
+     lcd.setCursor(0,0);
+     distance_cm = mySensor.distance();
+       // Print the measured distance to lcd;
+     lcd.print("New Distance2: ");
+     lcd.print(distance_cm);
+     Serial.println("Display measured distance2");//SM print
+     delay(8000); //display for 8sec
+     lcd.clear();    
+  } 
+}//if statement for switch2 == HIGH  
+
+ if(startButtonstate == HIGH) // if statement for switch2 == low
+ {
+  if(switch1 == LOW && motor_rotate == 1)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Returning...");
+         //motor spins anti-cw for 3 sec
+     digitalWrite(in_1,LOW);
+     digitalWrite(in_2,HIGH);
+     analogWrite(pwm,255);
+     delay(3000);
+     lcd.clear();
+
+     digitalWrite(in_1,LOW);
+     digitalWrite(in_2,LOW);
+     motor_rotate = 0 ;
+  } 
+ }
+ /////////////////////////////
+ 
+ if(startButtonstate == HIGH)
+{
+  if(switch3 == HIGH && motor_rotate == 0)
+  {  
+// Get the start point(distance) for 3sec
+    lcd.setCursor(0,0);
+    distance_cm = mySensor.distance();
+// Print the measured distance to lcd;
+     lcd.print("Starting distance3: ");
+     lcd.print(distance_cm);
+     Serial.println("Display starting distance3");//SM print
+     delay(2500); // display starting distance for 2.5sec
+
+     lcd.clear();
+     delay(500);
+     Serial.println("Motor is spinning clockwise");//SM print
+
+//motor spins cw for 3 sec
+     digitalWrite(in_1,HIGH);
+     digitalWrite(in_2,LOW);
+     analogWrite(pwm,255);
+     delay(3000);
+
+//stop motor
+    digitalWrite(in_1,LOW); 
+    digitalWrite(in_2,LOW);
+    motor_rotate = 1;
+
+//display new distance2
+     lcd.setCursor(0,0);
+     distance_cm = mySensor.distance();
+       // Print the measured distance to lcd;
+     lcd.print("New Distance3: ");
+     lcd.print(distance_cm);
+     Serial.println("Display measured distance");//SM print
+     delay(8000); //display for 8sec
+     lcd.clear();    
+  } 
+}//if statement for switch3 == HIGH  
+
+ if(startButtonstate == HIGH) // if statement for switch3 == low
+ {
+  if(switch3 == LOW && motor_rotate == 1)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Returning...");
+         //motor spins anti-cw for 3 sec
+     digitalWrite(in_1,LOW);
+     digitalWrite(in_2,HIGH);
+     analogWrite(pwm,255);
+     delay(3000);
+     lcd.clear();
+
+     digitalWrite(in_1,LOW);
+     digitalWrite(in_2,LOW);
+     motor_rotate = 0 ;
+  } 
+ }
+  
+ 
+
+
+}//end of void loop
